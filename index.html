@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>إدارة المنتجات - VNDR.KR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;900&display=swap">
+  <style>
+    body {
+      font-family: 'Tajawal', Arial, sans-serif;
+      background: linear-gradient(135deg,#f8fbfd 0%,#f1f3f9 100%);
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      background: #fff;
+      box-shadow: 0 2px 16px #e7eaf5;
+      padding: 32px 0 18px 0;
+      text-align: center;
+      font-size: 2.3em;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      border-radius: 0 0 32px 32px;
+      margin-bottom: 18px;
+      color: #377dcb;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 6px 32px #2222;
+      padding: 24px;
+    }
+    .section-title {
+      color: #377dcb;
+      font-size: 1.3em;
+      margin: 20px 0 14px 0;
+      text-align: center;
+    }
+    form {
+      background: #f4f6fb;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px #ccc2;
+      display: grid;
+      gap: 15px;
+    }
+    form label {
+      font-weight: bold;
+    }
+    form input, form select {
+      padding: 10px;
+      border-radius: 7px;
+      border: 1px solid #d3dae6;
+      font-size: 1em;
+      background: #fff;
+      transition: border 0.2s;
+    }
+    form input:focus, form select:focus {
+      border: 1.5px solid #536dfe;
+      outline: none;
+    }
+    form button {
+      background: linear-gradient(90deg,#536dfe 0%,#5e81f4 100%);
+      color: #fff;
+      border: none;
+      padding: 12px 0;
+      border-radius: 7px;
+      font-weight: bold;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 6px;
+    }
+    .success, .error {
+      text-align: center; margin: 10px;
+      font-size: 1.1em;
+    }
+    .success { color: #39c172; }
+    .error { color: #e74c3c; }
+    .brands-list {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+    .brand-btn-admin {
+      background: #e3f0ff;
+      color: #377dcb;
+      border: none;
+      padding: 12px 28px;
+      font-size: 1.1em;
+      border-radius: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 4px 18px #efb5c333;
+      letter-spacing: 1px;
+      position: relative;
+      transition: box-shadow 0.2s, transform 0.2s;
+      outline: none;
+      border: 2px solid transparent;
+      margin-bottom: 8px;
+      /* لا تظهر أي علامة بجانب النص */
+    }
+    .brand-btn-admin.active,
+    .brand-btn-admin:hover {
+      background: #c6e4ff;
+      color: #fff;
+      border: 2px solid #377dcb;
+      box-shadow: 0 10px 32px #fdc1de99;
+      transform: scale(1.06);
+    }
+    .brand-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 3px;
+      justify-content: center;
+    }
+    .brand-action-btn {
+      background: #fff;
+      color: #377dcb;
+      border: 1px solid #377dcb;
+      border-radius: 6px;
+      font-size: 0.9em;
+      font-weight: bold;
+      padding: 4px 12px;
+      cursor: pointer;
+      margin-left: 2px;
+      margin-right: 2px;
+      transition: background 0.18s, color 0.18s;
+    }
+    .brand-action-btn:hover {
+      background: #377dcb;
+      color: #fff;
+    }
+    .edit-brand-input {
+      padding: 5px 9px;
+      border-radius: 5px;
+      border: 1px solid #d3dae6;
+      font-size: 1em;
+      margin-right: 4px;
+      margin-left: 4px;
+      min-width: 110px;
+    }
+    .products-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px,1fr));
+      gap: 22px;
+      margin-top: 20px;
+    }
+    .product-card {
+      background: #fafbff;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px #2222;
+      padding: 18px;
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      align-items: center;
+      position: relative;
+      transition: box-shadow 0.18s;
+    }
+    .product-card:hover {
+      box-shadow: 0 8px 24px #2223;
+    }
+    .product-card img {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #e3e6ef;
+      border: 1px solid #dde2ec;
+    }
+    .product-info {
+      flex: 1;
+    }
+    .product-info h3 {
+      font-size: 1.15em;
+      margin: 0 0 8px 0;
+    }
+    .product-info .prices {
+      margin-bottom: 6px;
+      font-size: 1.09em;
+    }
+    .old-price {
+      text-decoration: line-through;
+      color: #888;
+      margin-right: 10px;
+      font-weight: 400;
+    }
+    .discount {
+      color: #e74c3c;
+      font-weight: bold;
+      margin-left: 8px;
+    }
+    .product-actions {
+      display: flex;
+      gap: 10px;
+      flex-direction: column;
+    }
+    .edit-btn, .save-btn, .cancel-btn, .delete-btn {
+      font-size: 0.98em;
+      padding: 7px 0;
+      border-radius: 7px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .edit-btn {
+      background: linear-gradient(90deg,#ffb300 0%,#ffc107 100%);
+      color: #222;
+    }
+    .save-btn {
+      background: linear-gradient(90deg,#39c172 0%,#43e97b 100%);
+      color: #fff;
+    }
+    .cancel-btn {
+      background: linear-gradient(90deg,#bdbdbd 0%,#e0e0e0 100%);
+      color: #222;
+    }
+    .delete-btn {
+      background: linear-gradient(90deg,#e74c3c 0%,#ff9d9d 100%);
+      color: #fff;
+    }
+    @media (max-width:600px) {
+      .container { padding: 6px; border-radius: 8px; }
+      .product-card { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .product-card img { width: 100%; height: 80px;}
+    }
+  </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDDg8cfAhHERZ1vigJo85xrozYDx5MrGpI",
+      authDomain: "vndrexpress.firebaseapp.com",
+      projectId: "vndrexpress",
+      storageBucket: "vndrexpress.firebasestorage.app",
+      messagingSenderId: "1023632565902",
+      appId: "1:1023632565902:web:a13e07dd66f563ce77cbdf",
+      measurementId: "G-CQCRZZBJHK"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // إضافة منتج جديد
+    async function addProduct(data) {
+      return await addDoc(collection(db, "products"), data);
+    }
+    // جلب جميع المنتجات
+    async function getAllProducts() {
+      const q = query(collection(db, "products"));
+      const querySnapshot = await getDocs(q);
+      const products = [];
+      querySnapshot.forEach(docSnap => {
+        products.push({ id: docSnap.id, ...docSnap.data() });
+      });
+      return products;
+    }
+    // تحديث منتج
+    async function updateProduct(id, data) {
+      const docRef = doc(db, "products", id);
+      await updateDoc(docRef, data);
+    }
+    // حذف منتج
+    async function deleteProduct(id) {
+      await deleteDoc(doc(db, "products", id));
+    }
+
+    // إضافة ماركة جديدة
+    async function addBrand(brand) {
+      return await addDoc(collection(db, "brands"), { name: brand });
+    }
+    // جلب جميع الماركات
+    async function getBrands() {
+      const q = query(collection(db, "brands"));
+      const querySnapshot = await getDocs(q);
+      const brands = [];
+      querySnapshot.forEach(docSnap => {
+        brands.push({ id: docSnap.id, name: docSnap.data().name });
+      });
+      return brands;
+    }
+    // تحديث ماركة
+    async function updateBrand(id, name) {
+      await updateDoc(doc(db, "brands", id), { name });
+    }
+    // حذف ماركة
+    async function deleteBrand(id) {
+      await deleteDoc(doc(db, "brands", id));
+    }
+
+    // تحديث قائمة الماركات في النموذج وقسم الأزرار
+    async function updateBrandsUI() {
+      const brands = await getBrands();
+      // تحديث القائمة في النموذج
+      const brandSelect = document.getElementById('brand');
+      brandSelect.innerHTML = brands.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
+      // تحديث أزرار الماركات مع إمكانية التعديل والحذف
+      const brandsListDiv = document.getElementById('brandsList');
+      brandsListDiv.innerHTML = '';
+      brands.forEach(b => {
+        brandsListDiv.innerHTML += `
+          <div style="display:inline-block;">
+            <button class="brand-btn-admin" id="brand-btn-${b.id}">${b.name}</button>
+            <div class="brand-actions" id="brand-actions-${b.id}">
+              <button class="brand-action-btn" onclick="editBrand('${b.id}', '${b.name}')">تعديل</button>
+              <button class="brand-action-btn" onclick="deleteBrandUI('${b.id}')">حذف</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // تعديل ماركة
+    window.editBrand = function(id, oldName) {
+      const brandBtn = document.getElementById(`brand-btn-${id}`);
+      const brandActions = document.getElementById(`brand-actions-${id}`);
+      brandBtn.outerHTML = `<input class="edit-brand-input" id="brand-input-${id}" type="text" value="${oldName}">`;
+      brandActions.innerHTML = `
+        <button class="brand-action-btn" onclick="saveBrand('${id}')">حفظ</button>
+        <button class="brand-action-btn" onclick="cancelEditBrand('${id}', '${oldName}')">إلغاء</button>
+      `;
+    };
+
+    window.saveBrand = async function(id) {
+      const input = document.getElementById(`brand-input-${id}`);
+      const newName = input.value.trim();
+      if (!newName) return;
+      await updateBrand(id, newName);
+      await updateBrandsUI();
+    };
+
+    window.cancelEditBrand = function(id, oldName) {
+      updateBrandsUI();
+    };
+
+    window.deleteBrandUI = async function(id) {
+      if (!confirm("هل أنت متأكد من حذف هذا الزر؟")) return;
+      await deleteBrand(id);
+      await updateBrandsUI();
+    };
+
+    // عرض المنتجات
+    async function renderProducts() {
+      const productsDiv = document.getElementById('productsList');
+      productsDiv.innerHTML = '<p>جاري التحميل...</p>';
+      const products = await getAllProducts();
+      productsDiv.innerHTML = '';
+      if (products.length === 0) {
+        productsDiv.innerHTML = '<p>لا يوجد منتجات بعد.</p>';
+        return;
+      }
+      products.forEach(prod => {
+        const discount = prod.oldPrice && prod.price
+          ? ((prod.oldPrice - prod.price) / prod.oldPrice * 100).toFixed(0)
+          : '';
+        productsDiv.innerHTML += `
+          <div class="product-card" id="card-${prod.id}">
+            <img src="${prod.image}" alt="${prod.name}">
+            <div class="product-info" id="info-${prod.id}">
+              <h3>${prod.name}</h3>
+              <div class="prices">
+                ${prod.oldPrice ? `<span class="old-price">${prod.oldPrice} د.ع</span>` : ''}
+                <span>${prod.price} د.ع</span>
+                ${discount ? `<span class="discount">خصم ${discount}%</span>` : ''}
+              </div>
+              <div><b>ماركة المنتج:</b> ${prod.brand}</div>
+            </div>
+            <div class="product-actions" id="actions-${prod.id}">
+              <button class="edit-btn" onclick="editProduct('${prod.id}')">تعديل</button>
+              <button class="delete-btn" onclick="deleteProductUI('${prod.id}')">حذف</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // تحرير المنتج
+    window.editProduct = async function(id) {
+      const card = document.getElementById(`card-${id}`);
+      const info = document.getElementById(`info-${id}`);
+      const actions = document.getElementById(`actions-${id}`);
+      const name = info.querySelector('h3').innerText;
+      const image = card.querySelector('img').src;
+      const pricesText = info.querySelector('.prices').innerText;
+      const oldPriceMatch = pricesText.match(/(\d+(\.\d+)?) د.ع/);
+      const priceMatch = pricesText.match(/(\d+(\.\d+)?) د.ع(?!.*د.ع)/);
+      const oldPrice = oldPriceMatch ? parseFloat(oldPriceMatch[1]) : '';
+      const price = priceMatch ? parseFloat(priceMatch[1]) : '';
+      const brand = info.innerHTML.match(/ماركة المنتج:<\/b> ([^<]+)/) ? info.innerHTML.match(/ماركة المنتج:<\/b> ([^<]+)/)[1] : '';
+      const brands = await getBrands();
+      info.innerHTML = `
+        <input type="text" id="edit-name-${id}" value="${name}" placeholder="اسم المنتج">
+        <input type="url" id="edit-image-${id}" value="${image}" placeholder="رابط الصورة">
+        <input type="number" id="edit-oldPrice-${id}" value="${oldPrice}" min="0" step="0.01" placeholder="السعر القديم">
+        <input type="number" id="edit-price-${id}" value="${price}" min="0" step="0.01" placeholder="السعر الجديد">
+        <select id="edit-brand-${id}">
+          ${brands.map(b => `<option value="${b.name}" ${brand===b.name?'selected':''}>${b.name}</option>`).join('')}
+        </select>
+      `;
+      actions.innerHTML = `
+        <button class="save-btn" onclick="saveProduct('${id}')">حفظ</button>
+        <button class="cancel-btn" onclick="cancelEdit('${id}')">إلغاء</button>
+      `;
+    };
+
+    window.saveProduct = async function(id) {
+      const name = document.getElementById(`edit-name-${id}`).value;
+      const image = document.getElementById(`edit-image-${id}`).value;
+      const oldPrice = document.getElementById(`edit-oldPrice-${id}`).value;
+      const price = document.getElementById(`edit-price-${id}`).value;
+      const brand = document.getElementById(`edit-brand-${id}`).value;
+      try {
+        await updateProduct(id, {
+          name,
+          image,
+          oldPrice: oldPrice ? parseFloat(oldPrice) : null,
+          price: price ? parseFloat(price) : null,
+          brand
+        });
+        document.getElementById('successMsg').textContent = 'تم حفظ التعديلات بنجاح!';
+        setTimeout(() => document.getElementById('successMsg').textContent = '', 2000);
+        renderProducts();
+      } catch (err) {
+        document.getElementById('errorMsg').textContent = 'حدث خطأ! حاول مرة أخرى.';
+      }
+    };
+
+    window.cancelEdit = function(id) {
+      renderProducts();
+    };
+
+    window.deleteProductUI = async function(id) {
+      if (!confirm("هل أنت متأكد من حذف هذا المنتج؟")) return;
+      await deleteProduct(id);
+      renderProducts();
+    };
+
+    window.onload = async function() {
+      await updateBrandsUI();
+      renderProducts();
+
+      // إضافة منتج جديد
+      const form = document.getElementById('productForm');
+      form.onsubmit = async function(e) {
+        e.preventDefault();
+        const data = {
+          name: form.name.value,
+          image: form.image.value,
+          oldPrice: form.oldPrice.value ? parseFloat(form.oldPrice.value) : null,
+          price: parseFloat(form.price.value),
+          brand: form.brand.value
+        };
+        document.getElementById('successMsg').textContent = '';
+        document.getElementById('errorMsg').textContent = '';
+        try {
+          await addProduct(data);
+          document.getElementById('successMsg').textContent = 'تم إضافة المنتج بنجاح!';
+          form.reset();
+          renderProducts();
+        } catch (err) {
+          document.getElementById('errorMsg').textContent = 'حدث خطأ! حاول مرة أخرى.';
+        }
+      };
+
+      // إضافة ماركة جديدة
+      const brandForm = document.getElementById('brandForm');
+      brandForm.onsubmit = async function(e) {
+        e.preventDefault();
+        const brandName = brandForm.brandName.value.trim();
+        if (!brandName) return;
+        try {
+          await addBrand(brandName);
+          document.getElementById('successBrandMsg').textContent = "تمت إضافة زر جديد بنجاح!";
+          brandForm.reset();
+          await updateBrandsUI();
+        } catch (err) {
+          document.getElementById('errorBrandMsg').textContent = "حدث خطأ أثناء إضافة الزر!";
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+  <header>لوحة إدارة منتجات VNDR.KR</header>
+  <div class="container">
+    <h2 class="section-title">إضافة ماركة جديدة (زر جديد)</h2>
+    <form id="brandForm">
+      <label for="brandName">اسم الزر/الماركة الجديد (مثال: منتجات COSRX)</label>
+      <input type="text" id="brandName" required>
+      <button type="submit">إضافة زر جديد</button>
+      <div class="success" id="successBrandMsg"></div>
+      <div class="error" id="errorBrandMsg"></div>
+    </form>
+    <div class="brands-list" id="brandsList"></div>
+    <h2 class="section-title">إضافة منتج جديد</h2>
+    <form id="productForm">
+      <label>اسم المنتج</label>
+      <input type="text" id="name" required>
+      <label>رابط صورة المنتج</label>
+      <input type="url" id="image" required>
+      <label>السعر القديم</label>
+      <input type="number" id="oldPrice" min="0" step="0.01">
+      <label>السعر الجديد</label>
+      <input type="number" id="price" min="0" step="0.01" required>
+      <label>اسم الزر/الماركة</label>
+      <select id="brand" required>
+        <!-- خيارات الماركات تملأ تلقائياً -->
+      </select>
+      <button type="submit">إضافة المنتج</button>
+      <div class="success" id="successMsg"></div>
+      <div class="error" id="errorMsg"></div>
+    </form>
+    <h2 class="section-title">كل المنتجات</h2>
+    <div class="products-list" id="productsList"></div>
+  </div>
+</body>
+</html>
