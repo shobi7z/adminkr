@@ -104,7 +104,6 @@
       outline: none;
       border: 2px solid transparent;
       margin-bottom: 8px;
-      /* لا تظهر أي علامة بجانب النص */
     }
     .brand-btn-admin.active,
     .brand-btn-admin:hover {
@@ -145,6 +144,22 @@
       margin-right: 4px;
       margin-left: 4px;
       min-width: 110px;
+    }
+    .products-by-brand {
+      margin-bottom: 36px;
+      border-bottom: 1px solid #e7eaf5;
+      padding-bottom: 22px;
+    }
+    .products-brand-title {
+      color: #377dcb;
+      background: #f3fafe;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 1.18em;
+      padding: 13px 0;
+      text-align: center;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 10px #377dcb11;
     }
     .products-list {
       display: grid;
@@ -335,6 +350,7 @@
       if (!newName) return;
       await updateBrand(id, newName);
       await updateBrandsUI();
+      await renderProductsByBrand();
     };
 
     window.cancelEditBrand = function(id, oldName) {
@@ -345,37 +361,50 @@
       if (!confirm("هل أنت متأكد من حذف هذا الزر؟")) return;
       await deleteBrand(id);
       await updateBrandsUI();
+      await renderProductsByBrand();
     };
 
-    // عرض المنتجات
-    async function renderProducts() {
-      const productsDiv = document.getElementById('productsList');
-      productsDiv.innerHTML = '<p>جاري التحميل...</p>';
+    // عرض المنتجات مجمعة حسب الماركة
+    async function renderProductsByBrand() {
+      const brands = await getBrands();
       const products = await getAllProducts();
+      const productsDiv = document.getElementById('productsList');
       productsDiv.innerHTML = '';
-      if (products.length === 0) {
-        productsDiv.innerHTML = '<p>لا يوجد منتجات بعد.</p>';
+
+      if (brands.length === 0) {
+        productsDiv.innerHTML = '<p>لا يوجد ماركات بعد.</p>';
         return;
       }
-      products.forEach(prod => {
-        const discount = prod.oldPrice && prod.price
-          ? ((prod.oldPrice - prod.price) / prod.oldPrice * 100).toFixed(0)
-          : '';
+      brands.forEach(b => {
+        const brandProducts = products.filter(p => p.brand === b.name);
         productsDiv.innerHTML += `
-          <div class="product-card" id="card-${prod.id}">
-            <img src="${prod.image}" alt="${prod.name}">
-            <div class="product-info" id="info-${prod.id}">
-              <h3>${prod.name}</h3>
-              <div class="prices">
-                ${prod.oldPrice ? `<span class="old-price">${prod.oldPrice} د.ع</span>` : ''}
-                <span>${prod.price} د.ع</span>
-                ${discount ? `<span class="discount">خصم ${discount}%</span>` : ''}
-              </div>
-              <div><b>ماركة المنتج:</b> ${prod.brand}</div>
-            </div>
-            <div class="product-actions" id="actions-${prod.id}">
-              <button class="edit-btn" onclick="editProduct('${prod.id}')">تعديل</button>
-              <button class="delete-btn" onclick="deleteProductUI('${prod.id}')">حذف</button>
+          <div class="products-by-brand">
+            <div class="products-brand-title">${b.name}</div>
+            <div class="products-list" id="products-list-brand-${b.id}">
+              ${brandProducts.length === 0 ? '<p style="text-align:center;">لا يوجد منتجات لهذه الماركة.</p>' : ''}
+              ${brandProducts.map(prod => {
+                const discount = prod.oldPrice && prod.price
+                  ? ((prod.oldPrice - prod.price) / prod.oldPrice * 100).toFixed(0)
+                  : '';
+                return `
+                  <div class="product-card" id="card-${prod.id}">
+                    <img src="${prod.image}" alt="${prod.name}">
+                    <div class="product-info" id="info-${prod.id}">
+                      <h3>${prod.name}</h3>
+                      <div class="prices">
+                        ${prod.oldPrice ? `<span class="old-price">${prod.oldPrice} د.ع</span>` : ''}
+                        <span>${prod.price} د.ع</span>
+                        ${discount ? `<span class="discount">خصم ${discount}%</span>` : ''}
+                      </div>
+                      <div><b>ماركة المنتج:</b> ${prod.brand}</div>
+                    </div>
+                    <div class="product-actions" id="actions-${prod.id}">
+                      <button class="edit-btn" onclick="editProduct('${prod.id}')">تعديل</button>
+                      <button class="delete-btn" onclick="deleteProductUI('${prod.id}')">حذف</button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
             </div>
           </div>
         `;
@@ -427,25 +456,25 @@
         });
         document.getElementById('successMsg').textContent = 'تم حفظ التعديلات بنجاح!';
         setTimeout(() => document.getElementById('successMsg').textContent = '', 2000);
-        renderProducts();
+        renderProductsByBrand();
       } catch (err) {
         document.getElementById('errorMsg').textContent = 'حدث خطأ! حاول مرة أخرى.';
       }
     };
 
     window.cancelEdit = function(id) {
-      renderProducts();
+      renderProductsByBrand();
     };
 
     window.deleteProductUI = async function(id) {
       if (!confirm("هل أنت متأكد من حذف هذا المنتج؟")) return;
       await deleteProduct(id);
-      renderProducts();
+      renderProductsByBrand();
     };
 
     window.onload = async function() {
       await updateBrandsUI();
-      renderProducts();
+      renderProductsByBrand();
 
       // إضافة منتج جديد
       const form = document.getElementById('productForm');
@@ -464,7 +493,7 @@
           await addProduct(data);
           document.getElementById('successMsg').textContent = 'تم إضافة المنتج بنجاح!';
           form.reset();
-          renderProducts();
+          renderProductsByBrand();
         } catch (err) {
           document.getElementById('errorMsg').textContent = 'حدث خطأ! حاول مرة أخرى.';
         }
@@ -519,7 +548,7 @@
       <div class="error" id="errorMsg"></div>
     </form>
     <h2 class="section-title">كل المنتجات</h2>
-    <div class="products-list" id="productsList"></div>
+    <div id="productsList"></div>
   </div>
 </body>
 </html>
